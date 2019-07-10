@@ -1,6 +1,9 @@
-import yaml
-from socket import socket
+import json
 from argparse import ArgumentParser
+from datetime import datetime as dt
+from socket import socket
+
+import yaml
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -11,10 +14,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 default_config = {'host': 'localhost',
-                  'port': 8000,
+                  'port': 1080,
                   'buffersize': 1024
                   }
-
 
 if args.config:
     with open(args.config) as file:
@@ -28,9 +30,18 @@ sock.connect(
 
 print('client was started')
 
+action = input('enter action: ')
 data = input('enter data: ')
 
-sock.send(data.encode())
+request = {
+    'action': action,
+    'time': dt.now().timestamp(),
+    'data': data
+}
+
+s_rquest = json.dumps(request)
+
+sock.send(s_rquest.encode())
 print('client send data: {}'.format(data))
 b_responce = sock.recv(default_config.get('buffersize'))
 print(b_responce.decode())
