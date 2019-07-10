@@ -1,5 +1,5 @@
 INSTALLED_MODULES = (
     'echo',
-    'messenger'
-    'serverdate'
+    'messenger',
+    'serverdate',
 )
