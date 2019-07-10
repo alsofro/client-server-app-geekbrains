@@ -1,0 +1,7 @@
+2019-07-10 21:25:37,762 - INFO - server was started with localhost:1080
+2019-07-10 21:25:41,032 - INFO - server shutdown
+2019-07-10 21:26:39,177 - INFO - server was started with localhost:1080
+2019-07-10 21:26:46,238 - INFO - client was connected with 127.0.0.1:34512
+2019-07-10 21:27:06,240 - DEBUG - controller: echo resolved with request: {'action': 'echo', 'time': 1562783226.231557, 'data': 'data'}
+2019-07-10 21:27:22,646 - INFO - client was connected with 127.0.0.1:34516
+2019-07-10 21:27:25,205 - ERROR - controller: aadg not found
