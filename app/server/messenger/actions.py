@@ -1,3 +1,6 @@
 actionnames = [
-    {'action': 'empty', 'controller': 'empty controller'}
+    {
+        'action': 'empty',
+        'controller': 'empty controller'
+    }
 ]

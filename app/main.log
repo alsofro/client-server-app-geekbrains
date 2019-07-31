@@ -24,3 +24,6 @@
 2019-07-24 21:02:31,188 - INFO - client was connected with 127.0.0.1:32894
 2019-07-24 21:02:36,127 - DEBUG - controller: servererror resolved with request: {'action': 'servererror', 'time': 1563991356.117863, 'data': 'hi', 'token': 'e8ef31b7023c1980858c1f86cfbb0369419021a438e10d059c2843ac5dfcab40'}
 2019-07-24 21:02:36,127 - CRITICAL - controller: servererror error: server error message
+2019-07-31 07:44:34,183 - INFO - server was started with localhost:1080
+2019-07-31 07:44:37,938 - INFO - client was connected with 127.0.0.1:54610
+2019-07-31 07:44:50,609 - DEBUG - controller: frequency resolved with request: {'action': 'frequency', 'time': 1564548290.595498, 'data': 'hello, world', 'token': '755011f7a5f8d6f779d3fd1c4b5de0c3ffce923ea06ec854a607285322ec280a'}
