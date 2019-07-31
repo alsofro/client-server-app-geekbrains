@@ -1,11 +1,12 @@
 import json
+import logging
 from argparse import ArgumentParser
 from socket import socket
-from resolvers import resolve
 
 import yaml
 
 from protocol import validate_request, make_response
+from resolvers import resolve
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -27,16 +28,26 @@ if args.config:
 
 host, port = (default_config.get('host'), default_config.get('port'))
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('main.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+
 try:
     sock = socket()
     sock.bind((host, port))
     sock.listen(5)
 
-    print('server was started with {}:{}'.format(default_config.get('host'), default_config.get('port')))
+    logging.info('server was started with {}:{}'.format(default_config.get('host'), default_config.get('port')))
 
     while True:
         client, address = sock.accept()
-        print('client was connected with {}:{}'.format(address[0], address[1]))
+        logging.info('client was connected with {}:{}'.format(address[0], address[1]))
+
         b_request = client.recv(default_config.get('buffersize'))
         request = json.loads(b_request.decode())
 
@@ -45,16 +56,16 @@ try:
             controller = resolve(action_name)
             if controller:
                 try:
-                    print('controller: {} resolved with request: {}'.format(action_name, request))
+                    logging.debug('controller: {} resolved with request: {}'.format(action_name, request))
                     response = controller(request)
                 except Exception as err:
-                    print('controller: {} error: {}'.format(action_name, err))
+                    logging.critical('controller: {} error: {}'.format(action_name, err))
                     response = make_response(request, 500, 'internal server error')
             else:
-                print('controller: {} not found'.format(action_name))
+                logging.error('controller: {} not found'.format(action_name))
                 response = make_response(request, 404, 'action with name {} not supported'.format(action_name))
         else:
-            print('controller wrong request: {}'.format(request))
+            logging.error('controller wrong request: {}'.format(request))
             response = make_response(request, 400, 'wrong request format')
 
         client.send(json.dumps(response).encode())
@@ -62,4 +73,4 @@ try:
         client.close()
 
 except KeyboardInterrupt:
-    print('server shutdown')
+    logging.info('server shutdown')

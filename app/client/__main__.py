@@ -1,3 +1,4 @@
+import hashlib
 import json
 from argparse import ArgumentParser
 from datetime import datetime as dt
@@ -30,13 +31,17 @@ sock.connect(
 
 print('client was started')
 
+hash_obj = hashlib.sha256()
+hash_obj.update(str(dt.now().timestamp()).encode())
+
 action = input('enter action: ')
 data = input('enter data: ')
 
 request = {
     'action': action,
     'time': dt.now().timestamp(),
-    'data': data
+    'data': data,
+    'token': hash_obj.hexdigest()
 }
 
 s_rquest = json.dumps(request)
