@@ -9,5 +9,5 @@ def frequency_controller(request):
             frequency[letter] += 1
         else:
             frequency[letter] = 1
-    frequency = json.dumps(frequency, ensure_ascii=False, indent=4)
+    frequency = json.dumps(frequency, ensure_ascii=False)
     return make_response(request, 200, frequency)
