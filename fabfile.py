@@ -1,3 +1,5 @@
+import subprocess
+
 from fabric.api import local
 
 
@@ -6,8 +8,12 @@ def server():
 
 
 def client():
-    local(f'python app/client')
+    local('python app/client')
 
+
+def multi_client(count=1):
+    for i in range(int(count)):
+        subprocess.call('fab client', shell=True)
 
 def test():
     local('pytest --cov-report term-missing --cov app/server')
