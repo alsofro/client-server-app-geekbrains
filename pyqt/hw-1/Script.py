@@ -38,19 +38,19 @@ def get_ip_range_list(ip_range: list):
 
     first_ip, last_ip = ip_range
     delta = int(last_ip.split('.')[-1]) - int(first_ip.split('.')[-1])
-    ip_range_list = [ip_address(first_ip) + i for i in range(0, delta+1)]
+    ip_range_list = [ip_address(first_ip) + i for i in range(0, delta + 1)]
 
     return ip_range_list
 
-def host_range_ping(ip_range_list:list):
+
+def host_range_ping(ip_range_list: list):
     for ip in ip_range_list:
         host_ping(ip)
 
 
-
 # 3 -------------------------------------------------------------------------------------------------------
 
-def host_range_ping_tab(ip_range:list):
+def host_range_ping_tab(ip_range: list):
     statuses = []
 
     for ip in ip_range:
@@ -86,3 +86,5 @@ if __name__ == '__main__':
     # 3
     ip_statuses_list = host_range_ping_tab(ip_range_list)
     print(tabulate(ip_statuses_list, headers='keys', tablefmt='grid'))
+
+    print(tabulate([{'1': [1, 2, 3, 4, 5]}, {'2': [14, 14, 1114, 14]}], headers='keys', tablefmt='grid'))
