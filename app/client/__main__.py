@@ -1,9 +1,10 @@
 import hashlib
 import json
+import zlib
 from argparse import ArgumentParser
 from datetime import datetime as dt
 from socket import socket
-
+import threading
 import yaml
 
 parser = ArgumentParser()
@@ -24,6 +25,16 @@ if args.config:
         config = yaml.load(file, Loader=yaml.Loader)
         default_config.update(default_config)
 
+
+
+
+def read(sock, buffersize):
+    while True:
+        b_compressed_responce = sock.recv(buffersize)
+        b_responce = zlib.decompress(b_compressed_responce)
+        print(b_responce.decode())
+
+
 sock = socket()
 sock.connect(
     (default_config.get('host'), default_config.get('port'))
@@ -31,22 +42,33 @@ sock.connect(
 
 print('client was started')
 
-hash_obj = hashlib.sha256()
-hash_obj.update(str(dt.now().timestamp()).encode())
+try:
+    r_thread = threading.Thread(target=read, args=(sock, default_config.get('buffersize'),))
+    r_thread.start()
 
-action = input('enter action: ')
-data = input('enter data: ')
+    while True:
+        hash_obj = hashlib.sha256()
+        hash_obj.update(str(dt.now().timestamp()).encode())
 
-request = {
-    'action': action,
-    'time': dt.now().timestamp(),
-    'data': data,
-    'token': hash_obj.hexdigest()
-}
+        action = input('enter action: ')
+        data = input('enter data: ')
 
-s_rquest = json.dumps(request)
+        request = {
+            'action': action,
+            'time': dt.now().timestamp(),
+            'data': data,
+            'token': hash_obj.hexdigest()
+        }
 
-sock.send(s_rquest.encode())
-print('client send data: {}'.format(data))
-b_responce = sock.recv(default_config.get('buffersize'))
-print(b_responce.decode())
+        s_request = json.dumps(request)
+
+        b_request = zlib.compress(s_request.encode())
+
+        sock.send(b_request)
+        print('client send data: {}'.format(data))
+
+
+
+except KeyboardInterrupt:
+    sock.close()
+    print('client was stopped')

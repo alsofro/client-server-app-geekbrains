@@ -6,7 +6,7 @@ def server():
 
 
 def client():
-    local('python app/client')
+    local(f'python app/client')
 
 
 def test():
