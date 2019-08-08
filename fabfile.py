@@ -5,8 +5,8 @@ def server():
     local('python app/server')
 
 
-def client(mode):
-    local(f'python app/client --mode {mode}')
+def client():
+    local(f'python app/client')
 
 
 def test():
