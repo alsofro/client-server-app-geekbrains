@@ -5,26 +5,7 @@ from argparse import ArgumentParser
 from socket import socket
 
 import yaml
-
 from handlers import handle_default_request
-
-
-def read(sock, connections: list, b_requests_list: list, buffersize: int):
-    try:
-        b_request = sock.recv(buffersize)
-    except:
-        connections.remove(sock)
-    else:
-        if b_request:
-            b_requests_list.append(b_request)
-
-
-def write(sock, connections: list, response):
-    try:
-        sock.send(response)
-    except:
-        connections.remove(sock)
-
 
 parser = ArgumentParser()
 parser.add_argument(
@@ -44,8 +25,6 @@ if args.config:
         config = yaml.load(file, Loader=yaml.Loader)
         default_config.update(default_config)
 
-host, port = (default_config.get('host'), default_config.get('port'))
-
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -55,42 +34,73 @@ logging.basicConfig(
     ]
 )
 
-b_requests_list = []
-connections = []
 
-try:
-    sock = socket()
-    sock.bind((host, port))
-    sock.settimeout(0)
-    sock.listen(5)
+class Server:
+    def __init__(self, host, port, buffersize):
+        self._b_requests_list = []
+        self._connections = []
+        self._host = host
+        self._port = port
+        self._buffersize = buffersize
 
-    logging.info('server was started with {}:{}'.format(default_config.get('host'), default_config.get('port')))
-
-    while True:
+    def read(self, sock, connections: list, b_requests_list: list, buffersize: int):
         try:
-            client, address = sock.accept()
-
-            connections.append(client)
-
-            logging.info(
-                'client was connected with {}:{} | Connections: {}'.format(address[0], address[1], connections))
+            b_request = sock.recv(buffersize)
         except:
-            pass
+            connections.remove(sock)
+        else:
+            if b_request:
+                b_requests_list.append(b_request)
 
-        rlist, wlist, xlist = select.select(connections, connections, connections, 0)
+    def write(self, sock, connections: list, response):
+        try:
+            sock.send(response)
+        except:
+            connections.remove(sock)
 
-        for r_client in rlist:
-            r_thread = threading.Thread(target=read,
-                                        args=(r_client, connections, b_requests_list, default_config.get('buffersize')))
-            r_thread.start()
+    def run(self):
+        try:
+            sock = socket()
+            sock.bind((self._host, self._port))
+            sock.settimeout(0)
+            sock.listen(5)
 
-        if b_requests_list:
-            b_request = b_requests_list.pop()
-            b_response = handle_default_request(b_request)
+            logging.info('server was started with {}:{}'.format(self._host, self._port))
 
-            for w_client in wlist:
-                w_thread = threading.Thread(target=write, args=(w_client, connections, b_response))
-                w_thread.start()
+            while True:
+                try:
+                    client, address = sock.accept()
 
-except KeyboardInterrupt:
-    logging.info('server shutdown')
+                    self._connections.append(client)
+
+                    logging.info(
+                        'client was connected with {}:{} | Connections: {}'.format(address[0], address[1],
+                                                                                   self._connections))
+                except:
+                    pass
+
+                rlist, wlist, xlist = select.select(self._connections, self._connections, self._connections, 0)
+
+                for r_client in rlist:
+                    r_thread = threading.Thread(target=self.read,
+                                                args=(
+                                                    r_client, self._connections, self._b_requests_list,
+                                                    self._buffersize))
+                    r_thread.start()
+
+                if self._b_requests_list:
+                    b_request = self._b_requests_list.pop()
+                    b_response = handle_default_request(b_request)
+
+                    for w_client in wlist:
+                        w_thread = threading.Thread(target=self.write, args=(w_client, self._connections, b_response))
+                        w_thread.start()
+
+        except KeyboardInterrupt:
+            logging.info('server shutdown')
+
+
+if __name__ == '__main__':
+    server = Server(default_config.get('host'), default_config.get('port'), default_config.get('buffersize'))
+    server.run()
+  

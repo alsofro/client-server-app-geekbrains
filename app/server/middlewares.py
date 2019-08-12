@@ -13,8 +13,6 @@ def compression_middleware(func):
 def encryption_middleware(func):
     @wraps(func)
     def wrapper(request, *args, **kwargs):
-        # decryption text
         b_responce = func(request, *args, **kwargs)
-        # encryption
         return b_responce
     return wrapper
