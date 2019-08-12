@@ -13,7 +13,7 @@ def client():
 
 def multi_client(count=1):
     for i in range(int(count)):
-        subprocess.call('fab client', shell=True)
+        proc = subprocess.Popen(['cmd'], shell=True)
 
 def test():
     local('pytest --cov-report term-missing --cov app/server')
