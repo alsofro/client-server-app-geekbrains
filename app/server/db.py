@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine('sqlite:///:memory:', echo=True, pool_recycle=7200)
+engine = create_engine('sqlite:///messenger.db', echo=True, pool_recycle=7200)
 Model = declarative_base()
 
 
