@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import threading
 import zlib
 from argparse import ArgumentParser
@@ -33,6 +34,19 @@ class Client:
         self._port = port
         self._buffersize = buffersize
         self._sock = None
+
+    def __enter__(self):
+        if not self._sock:
+            self._sock = socket()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        message = 'client shutdown'
+        if exc_type:
+            if not exc_type is KeyboardInterrupt:
+                message = 'client stopped with error'
+        logging.info(message)
+        self._sock.close()
+        return True
 
     def read(self, sock, buffersize):
         while True:
@@ -76,5 +90,5 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client(default_config.get('host'), default_config.get('port'), default_config.get('buffersize'))
-    client.run()
+    with Client(default_config.get('host'), default_config.get('port'), default_config.get('buffersize')) as client:
+        client.run()
