@@ -1,22 +1,12 @@
-from sqlalchemy import Table, Column, Integer, DateTime, String
-from sqlalchemy.orm import mapper
+from sqlalchemy import create_engine, Column, Integer, String, MetaData, DateTime
 
-from db import database_metadata
+from db import Model
 
-message_table = Table(
-    'messages', database_metadata,
-    Column('id', Integer, primary_key=True),
-    Column('content', String),
-    Column('user', String),
-    Column('created', DateTime)
-)
+from datetime import datetime
 
+class Message(Model):
+    __tablename__ = 'messages'
 
-class Message:
-    def __init__(self, content, user, date):
-        self.date = date
-        self.user = user
-        self.content = content
-
-
-mapper(Message, message_table)
+    id = Column(Integer, primary_key=True)
+    data = Column(String, nullable=True)
+    created = Column(DateTime, default=datetime.now())

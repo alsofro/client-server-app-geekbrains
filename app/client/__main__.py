@@ -6,13 +6,17 @@ import zlib
 from argparse import ArgumentParser
 from datetime import datetime as dt
 from socket import socket
-
+from db import database_metadata, engine
 import yaml
 
 parser = ArgumentParser()
 parser.add_argument(
     '-c', '--config', type=str,
     required=False, help='Sets config file path'
+)
+
+parser.add_argument(
+    '-m', '--migrate', action='store_true'
 )
 
 args = parser.parse_args()
@@ -27,6 +31,8 @@ if args.config:
         config = yaml.load(file, Loader=yaml.Loader)
         default_config.update(default_config)
 
+if args.migrate:
+    database_metadata.create_all(engine)
 
 class Client:
     def __init__(self, host, port, buffersize):

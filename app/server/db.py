@@ -2,7 +2,8 @@ from sqlalchemy import create_engine, Column, Integer, String, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine('sqlite:///messenger.db', echo=True, pool_recycle=7200)
-Model = declarative_base()
+database_metadata = MetaData()
+Model = declarative_base(metadata=database_metadata)
 
 
 class User(Model):
@@ -36,5 +37,3 @@ class ContactList(Model):
     def __init__(self, owner_id, client_id):
         self.owner_id = owner_id
         self.client_id = client_id
-
-database_metadata = MetaData()
