@@ -1,4 +1,5 @@
 INSTALLED_MODULES = (
+    'auth',
     'echo',
     'messenger',
     'servererrors',
