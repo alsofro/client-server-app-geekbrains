@@ -25,8 +25,3 @@ def get_server_actions():
 def resolve(action_name, actions=None):
     actionnames = actions or get_server_actions()
     return actionnames.get(action_name)
-
-
-if __name__ == '__main__':
-    print(get_server_actions())
-    print(resolve('echo'))
